@@ -32,26 +32,22 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
     while (l1 <= 15)
     {
         float beta1 = 2 * pi * (n1 + 1); 
-        float fi1 = atan2((a1 + b1 * beta1) / b1, b1);
-        l1 = 0.5 * (tan(fi1) / cos(fi1) + log(abs(tan(fi1) + 1 / cos(fi1))));
+        l1 = spiral_length(a1, b1, 0, beta1);
         n1++;
     }
     // 算出目前已经经过的距离
     float beta1 = 2 * pi * (n1);
-    float fi1 = atan2((a1 + b1 * beta1) / b1, b1);
-    l1 = 0.5 * (tan(fi1) / cos(fi1) + log(abs(tan(fi1) + 1 / cos(fi1))));
+    l1 = spiral_length(a1, b1, 0, beta1);
     float l2 = 0;
     int n2 = 0;
     while (l2 <= 15)
     {
         float beta2 = 2 * pi * (n2 + 1) + pi;
-        float fi2 = atan2((a2 + b2 * beta2) / b2, b2);
-        l2 = 0.5 * (tan(fi2) / cos(fi2) + log(abs(tan(fi2) + 1 / cos(fi2))));
+        l2 = spiral_length(a2, b2, 0, beta2);
         n2++;
     }
     float beta2 = 2 * pi * (n2) + pi;
-    float fi2 = atan2((a2 + b2 * beta2) / b2, b2);
-    l2 = 0.5 * (tan(fi2) / cos(fi2) + log(abs(tan(fi2) + 1 / cos(fi2))));
+    l2 = spiral_length(a2, b2, 0, beta2);
     // 根据两点之间的距离判断到底可否联通：如果一圈联通不了可以少一圈联通（迭代）
     float x1 = 0, y1 = 0, x2 = 0, y2 = 0;
     float alpha1 = 0, alpha2;
@@ -79,16 +75,16 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
     }
     // 根据两点之间的距离判断如何取曲线对应的点
     // 先判断螺线上的点
-    for(double i = 0 ; i <= alpha1 ; i=i+0.01)
+    for(double i = 0 ; i <= alpha1 ; i = i+0.01)
     {
         //极坐标转原坐标
         float x = (a1 + b1 * i) * cos(i);
-        x1 = x + startx;
+        x = x + startx;
         float y = (a1 + b1 * i) * sin(i);
-        y1 = y + starty;
+        y = y + starty;
         //对应plain上的点
-        int n = (x1 - 0.25) / 0.5;
-        int m = (y1 - 0.25) / 0.5;
+        int n = (x - 0.25) / 0.5;
+        int m = (y - 0.25) / 0.5;
         if(n <= rowsize && m <= colsize)
         {
             vec.push_back(plain.a[n][m]);
@@ -97,37 +93,36 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
     for(double i = 0 ; i <= alpha2 ; i = i + 0.01){
         // 极坐标转原坐标
         float x = (a2 + b2 * i) * cos(i);
-        x1 = x + endx;
+        x = x + startx;
         float y = (a2 + b2 * i) * sin(i);
-        y1 = y + endy;
+        y = y + starty;
         // 对应plain上的点
-        int n = (x1 - 0.25) / 0.5;
-        int m = (y1 - 0.25) / 0.5;
+        int n = (x - 0.25) / 0.5;
+        int m = (y - 0.25) / 0.5;
         if(n <= rowsize && m <= colsize){
             vec.push_back(plain.a[n][m]);
         }   
     }
     // 判断非螺线上的点
 
-    x1 = (a1 + b1 * alpha1) * cos(alpha1)+startx;
+    x1 = (a1 + b1 * alpha1) * cos(alpha1) + startx;
     beta1 = 2 * pi * (n1);
-    fi1 = atan2((a1 + b1 * beta1) / b1, b1);
-    l1 = 0.5 * (tan(fi1) / cos(fi1) + log(abs(tan(fi1) + 1 / cos(fi1))));
-    y1 = starty;
+    l1 = spiral_length(a1, b1, 0, beta1);
+    y1 = (a1 + b1 * alpha1) * sin(alpha1) + starty;
 
-    x2 = (a2 + b2 * alpha2) * cos(alpha2)+endx;
+    x2 = (a2 + b2 * alpha2) * cos(alpha2) + startx;
     beta2 = 2 * pi * (n2 + 1) + pi;
-    fi2 = atan2((a2 + b2 * beta2) / b2, b2);
-    l2 = 0.5 * (tan(fi2) / cos(fi2) + log(abs(tan(fi2) + 1 / cos(fi2))));
-    y2 = endy;
+    l2 = spiral_length(a1, b1, 0, beta2);
+    y2 = (a2 + b2 * alpha2) * sin(alpha2) + starty;
+
     float d = 30 - l1 - l2;
     float r = (x2 - x1)/2/pi;
     if (d >= 2*pi*r){
         for(double theta = 0; theta<=2*pi; theta = theta + 0.1){
-            float x = x1 + r*(theta-sin(theta));
-            float y = y + r * (1-cos(theta));
-            int n = (x1 - 0.25) / 0.5;
-            int m = (y1 - 0.25) / 0.5;
+            float x = x1 + r * (theta-sin(theta));
+            float y = y1 + r * (1-cos(theta));
+            int n = (x - 0.25) / 0.5;
+            int m = (y - 0.25) / 0.5;
             if(n <= rowsize && m <= colsize){
                 vec.push_back(plain.a[n][m]);
             }
@@ -137,8 +132,8 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         for(double i = 0; i<=10; i = i + 0.2){
             float x = x1 + i * (x2-x1)/10; 
             float y = y1 + i * (y2-y1)/10;
-            int n = (x1 - 0.25) / 0.5;
-            int m = (y1 - 0.25) / 0.5;
+            int n = (x - 0.25) / 0.5;
+            int m = (y - 0.25) / 0.5;
             if(n <= rowsize && m <= colsize){
                 vec.push_back(plain.a[n][m]);
             }
@@ -156,14 +151,12 @@ vector<int> FindCircle(float a1, float b1, float a2, float b2, int n1, int n2)
     float r1 = 2 * pi * (n1) * b1 + a1;
     float x1 = r1 * cos(2 * pi * (n1));
     float beta1 = 2 * pi * (n1);
-    float fi1 = atan2((a1 + b1 * beta1) / b1, b1);
-    float l1 = 0.5 * (tan(fi1) / cos(fi1) + log(abs(tan(fi1) + 1 / cos(fi1))));
+    float l1 = spiral_length(a1, b1, 0, beta1);
 
     float r2 =(2 * pi * n2 + pi) * b2 + a2;
     float x2 = r2 * cos(2 * pi * (n2) + pi);
     float beta2 = 2 * pi * (n2 + 1) + pi;
-    float fi2 = atan2((a2 + b2 * beta2) / b2, b2);
-    float l2 = 0.5 * (tan(fi2) / cos(fi2) + log(abs(tan(fi2) + 1 / cos(fi2))));
+    float l2 = spiral_length(a2, b2, 0, beta2);
 
     float d = x2 - x1;
     float l = 30 - l2 - l1;
