@@ -36,6 +36,7 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         n1++;
     }
     // 算出目前已经经过的距离
+    n1 --;
     float beta1 = 2 * pi * (n1);
     l1 = spiral_length(a1, b1, 0, beta1);
     float l2 = 0;
@@ -46,6 +47,7 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         l2 = spiral_length(a2, b2, 0, beta2);
         n2++;
     }
+    n2 --;
     float beta2 = 2 * pi * (n2) + pi;
     l2 = spiral_length(a2, b2, 0, beta2);
     // 根据两点之间的距离判断到底可否联通：如果一圈联通不了可以少一圈联通（迭代）
@@ -83,9 +85,9 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         float y = (a1 + b1 * i) * sin(i);
         y = y + starty;
         //对应plain上的点
-        int n = (x - 0.25) / 0.5;
-        int m = (y - 0.25) / 0.5;
-        if(n <= rowsize && m <= colsize)
+        int n = x / 0.5;
+        int m = y / 0.5;
+        if(n < rowsize && m < colsize && n >= 0 && m >= 0)
         {
             vec.push_back(plain.a[n][m]);
         }
@@ -97,11 +99,12 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         float y = (a2 + b2 * i) * sin(i);
         y = y + starty;
         // 对应plain上的点
-        int n = (x - 0.25) / 0.5;
-        int m = (y - 0.25) / 0.5;
-        if(n <= rowsize && m <= colsize){
+        int n = x / 0.5;
+        int m = y / 0.5;
+        if(n < rowsize && m < colsize && n >= 0 && m >= 0)
+        {
             vec.push_back(plain.a[n][m]);
-        }   
+        }
     }
     // 判断非螺线上的点
 
@@ -121,9 +124,10 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         for(double theta = 0; theta<=2*pi; theta = theta + 0.1){
             float x = x1 + r * (theta-sin(theta));
             float y = y1 + r * (1-cos(theta));
-            int n = (x - 0.25) / 0.5;
-            int m = (y - 0.25) / 0.5;
-            if(n <= rowsize && m <= colsize){
+            int n = x / 0.5;
+            int m = y / 0.5;
+            if(n < rowsize && m < colsize && n >= 0 && m >= 0)
+            {
                 vec.push_back(plain.a[n][m]);
             }
         }
@@ -132,9 +136,10 @@ vector<Node> gen_route_access(const Plain &plain, Node start, Node end)
         for(double i = 0; i<=10; i = i + 0.2){
             float x = x1 + i * (x2-x1)/10; 
             float y = y1 + i * (y2-y1)/10;
-            int n = (x - 0.25) / 0.5;
-            int m = (y - 0.25) / 0.5;
-            if(n <= rowsize && m <= colsize){
+            int n = x / 0.5;
+            int m = y / 0.5;
+            if(n < rowsize && m < colsize && n >= 0 && m >= 0)
+            {
                 vec.push_back(plain.a[n][m]);
             }
         }
