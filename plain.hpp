@@ -64,10 +64,10 @@ public:
             }
         }
     }
-    int rows(){
+    int rows() const{
         return a.size();
     }
-    int cols(){
+    int cols() const{
         return a[0].size();
     }
 };
