@@ -36,10 +36,18 @@ public:
     Plain(){
         
     }
-    void read(istream &in){
-        int n, m;
-        cin >> n >> m;
+    Plain(int n, int m, int w){
         a.resize(n, vector<Node>(m));
+        for(int i = 0; i < a.size(); i++){
+            for(int j = 0; j < a[i].size(); j++){
+                a[i][j].x = i, a[i][j].y = j, a[i][j].w = w;
+            }
+        }
+    }
+    void read(ifstream &in){
+        int n, m;
+        in >> n >> m;
+        a.resize(n, vector<Node>(m, Node()));
         for(int i = 0; i < a.size(); i++){
             for(int j = 0; j < a[i].size(); j++){
                 in >> a[i][j].c >> a[i][j].it;

@@ -1,15 +1,15 @@
-#include <gen_route.h>
+#include "gen_route.h"
 
 using namespace std;
 
-const int MAX_SEE = 10;
+const int MAX_SEE = 30;
 
 vector<Node> find_virtual_points(Plain &plain){
     int n=plain.rows(), m=plain.cols();
     vector<vector<bool>> cover(n, vector<bool>(m, 0));
     vector<Node> virtual_points;
 
-    for(int i = 0; i < n; i++){
+    for(int i = 0; i < n;){
         int tar=-1;
         for(int j = 0; j < m; j++){
             if(cover[i][j]){
@@ -19,6 +19,7 @@ vector<Node> find_virtual_points(Plain &plain){
             break;
         }
         if(tar == -1){
+            i++;
             continue;
         }
 
@@ -110,6 +111,7 @@ vector<pair<Node, Node>> find_matchs(vector<Node> points, Plain &plain){
             matchs.push_back(make_pair(Node(i, j), Node(x, y)));
         }
     }
+    return matchs;
 }
 
 vector<vector<bool>> find_coverage(Plain &plain, vector<Node> points){
@@ -130,20 +132,43 @@ vector<vector<bool>> find_coverage(Plain &plain, vector<Node> points){
     return cover;
 }
 
+vector<vector<bool>> project(Plain &plain, vector<Node> points){
+    int n=plain.rows(), m=plain.cols();
+    vector<vector<bool>> cover(n, vector<bool>(m, 0));
+    for(auto point:points){
+        int x = point.x, y = point.y;
+        cover[x][y] = true;
+    }
+    return cover;
+}
+
+void display(vector<vector<bool>> cover){
+    int n = cover.size(), m = cover[0].size();
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            cout << cover[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void display(Plain &plain, vector<Node> points){
+    int n = plain.rows(), m = plain.cols();
+    auto coverage = project(plain, points);
+    display(coverage);
+}
+
 int main(){
     string path; cin >> path; ifstream in(path);
     Plain plain; plain.read(in);
 
     auto result = find_virtual_points(plain);
-    auto matchs = find_matchs(result, plain);
 
-    auto avaliable_points = vector<Node>(0);
-    for(auto &match : matchs){
-        auto points = gen_route_access(plain, match.first, match.second);
-        avaliable_points.insert(avaliable_points.end(), points.begin(), points.end());
+    cout << "Virtual points:" << endl;
+    for(auto point:result){
+        cout << point.x << " " << point.y << endl;
     }
-
-    auto coverage = find_coverage(plain, avaliable_points);
-
+    auto matchs = find_matchs(result, plain);
+    auto coverage = find_coverage(plain, result);
     return 0;
 }
