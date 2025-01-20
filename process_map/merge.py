@@ -1,12 +1,12 @@
 # 打开文件并读取所有内容
 temp1 = []
 temp2 = []
-with open(r'C:\Users\Lenovo\Desktop\MCM\workspace-1.18\data\view_distance.txt', 'r') as file:
+with open('output.txt', 'r') as file:
     for line in file:
         parts = line.split()  # 按空格分离
         temp1.extend(parts)
 
-with open(r'C:\Users\Lenovo\Desktop\MCM\workspace-1.18\data\report_frequency.txt','r') as file:
+with open('output2.txt','r') as file:
     for line in file:
         parts = line.split()  # 按空格分离
         temp2.extend(parts)

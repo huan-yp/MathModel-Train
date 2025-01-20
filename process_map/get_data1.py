@@ -20,7 +20,7 @@ def get_image_rgb_values(image_path):
     return rgb_values
 
 # 示例：读取图像并获取所有像素点的RGB值
-image_path = r'C:\Users\Lenovo\Desktop\MCM\2021 B\resized_image.jpg'
+image_path = 'resized_image3.jpg'
 rgb_values = get_image_rgb_values(image_path)
 # 打开一个文件用于写入 (w 模式表示写入)
 ans = []
@@ -39,7 +39,7 @@ for i in range(1,682):
         data[i-1][j-1] = ans[i][j]*0.4+(ans[i-1][j]+ans[i+1][j]+ans[i][j-1]+ans[i][j+1])*0.1+(ans[i-1][j-1]+ans[i-1][j+1]+ans[i+1][j-1]+ans[i+1][j+1])*0.05
 
 
-with open('output.txt', 'w') as file:
+with open('output2.txt', 'w') as file:
     # 写入内容到文件
     for i in range(681): 
         for j in range(788):
