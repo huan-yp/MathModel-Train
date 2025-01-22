@@ -161,5 +161,3 @@ def calc_lake_args():
             plt.show()
             
         exit(0)
-
-calc_lake_args()
